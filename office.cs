@@ -84,3 +84,49 @@ func _on_AnimationPlayer_animation_finished( name ):
 }
 </style>
 }
+	    
+{
+  "@content.downloadUrl":"https://public-sn3302.files.1drv.com/y2pcT7OaUEExF7EHOlpTjCE55mIUoiX7H3sx1ff6I-nP35XUTBqZlnkh9FJhWb_pf9sZ7LEpEchvDznIbQig0hWBeidpwFkOqSKCwQylisarN6T0ecAeMvantizBUzM2PA1",
+  "createdDateTime": "2016-09-16T03:37:04.72Z",
+  "cTag": "aYzpENDY0OEYwNkM5MUQ5RDNEITU0OTI3LjI1Ng",
+  "eTag": "aRDQ2NDhGMDZDOTFEOUQzRCE1NDkyNy4w",
+  "id":"D4648F06C91D9D3D!54927",
+  "lastModifiedBy": {
+    "user": {
+      "displayName": "Daron Spektor",
+      "id": "d4648f06c91d9d3d"
+    }
+  },
+  "name":"BritishShorthair.jpg",
+  "size":35212,
+  "image":{
+    "height":398,
+    "width":273
+  },
+  "file": {
+    "hashes":{
+      "sha1Hash":"wmgPQ6jrSeMX7JP1XmstQEGM2fc="
+    }
+  }
+}
+	    MSHTTPClient *httpClient = [MSClientFactory createHTTPClientWithAuthenticationProvider:authenticationProvider];
+
+NSString *MSGraphBaseURL = @"https://graph.microsoft.com/v1.0/";
+NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[MSGraphBaseURL stringByAppendingString:@"/groups/{groupId}/drives"]]];
+[urlRequest setHTTPMethod:@"GET"];
+
+MSURLSessionDataTask *meDataTask = [httpClient dataTaskWithRequest:urlRequest 
+    completionHandler: ^(NSData *data, NSURLResponse *response, NSError *nserror) {
+
+        NSError *jsonError = nil;
+        MSCollection *collection = [[MSCollection alloc] initWithData:data error:&jsonError];
+        MSGraphDrive *drive = [[MSGraphDrive alloc] initWithDictionary:[[collection value] objectAtIndex: 0] error:&nserror];
+
+}];
+
+[meDataTask execute]
+	    GraphServiceClient graphClient = new GraphServiceClient( authProvider );
+
+var drives = await graphClient.Groups["{group-id}"].Drives
+    .Request()
+    .GetAsync();
