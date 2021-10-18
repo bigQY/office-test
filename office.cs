@@ -123,7 +123,7 @@ MSURLSessionDataTask *meDataTask = [httpClient dataTaskWithRequest:urlRequest
         MSGraphDrive *drive = [[MSGraphDrive alloc] initWithDictionary:[[collection value] objectAtIndex: 0] error:&nserror];
 
 }];
-
+The resource you have requested is not found.
 [meDataTask execute]
 	    GraphServiceClient graphClient = new GraphServiceClient( authProvider );
 
