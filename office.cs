@@ -129,4 +129,130 @@ The resource you have requested is not found.
 
 var drives = await graphClient.Groups["{group-id}"].Drives
     .Request()
-    .GetAsync();
+    .GetAsync()
+$message = Get-Content .\connector-card.json
+$url = <YOUR WEBHOOK URL>
+Invoke-RestMethod -ContentType "application/json" -Body $message -Uri $url -Method Post
+	<%-- The following 4 lines are ASP.NET directives needed when using SharePoint components --%>
+
+<%@ Page Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" MasterPageFile="~masterurl/default.master" Language="C#" %>
+
+<%@ Register TagPrefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register TagPrefix="WebPartPages" Namespace="Microsoft.SharePoint.WebPartPages" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register TagPrefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+
+<%-- The markup and script in the following Content element will be placed in the <head> of the page --%>
+<asp:Content ContentPlaceHolderID="PlaceHolderAdditionalPageHead" runat="server">
+  <script type="text/javascript" src="../Scripts/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
+  <script type="text/javascript" src="/_layouts/15/sp.js"></script>
+  <script type="text/javascript" src="../Scripts/knockout-3.2.0.js"></script>
+  <script type="text/javascript" src="../Scripts/q.min.js"></script>
+  <meta name="WebPartPageExpansion" content="full" />
+
+  <!-- Add your CSS styles to the following file -->
+  <link rel="Stylesheet" type="text/css" href="../Content/App.css" />
+
+  <!-- Add your JavaScript to the following file -->
+  <script type="text/javascript" src="../Scripts/App.js"></script>
+</asp:Content>
+
+<%-- The markup in the following Content element will be placed in the TitleArea of the page --%>
+<asp:Content ContentPlaceHolderID="PlaceHolderPageTitleInTitleArea" runat="server">
+  Page Title
+</asp:Content>
+
+<%-- The markup and script in the following Content element will be placed in the <body> of the page --%>
+<asp:Content ContentPlaceHolderID="PlaceHolderMain" runat="server">
+  
+  <input type="button" disabled="disabled" 
+         value="refresh list"
+         data-bind="click: getAllChiefExecutives"/>&nbsp;
+  <input type="button" disabled="disabled" 
+         value="appoint 3rd ceo"
+         data-bind="click: addThirdCeo"/>&nbsp;
+  <input type="button" disabled="disabled" 
+         value="delete first person"
+         data-bind="click: deleteFirstCeo"/>
+
+  <h1>Microsoft CEO's</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Tenure</th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: chiefExecutives">
+      <tr>
+        <td data-bind="text: Title"></td>
+        <td><span data-bind="text: TenureStartYear"></span> - <span data-bind="  text: TenureEndYear"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+</asp:Content>
+	<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Module Name="Pages">
+    <File Path="Pages\Default.aspx" Url="Pages/Default.aspx" ReplaceContent="TRUE" />
+  </Module>
+</Elements>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace RestServerSideWeb.Models {
+  public class SpChiefExecutive
+  {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string TenureStartYear { get; set; }
+    public string TenureEndYear { get; set; }
+  }
+}
+
+using Microsoft.SharePoint.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace RestServerSideWeb.Controllers {
+  public class HomeController : Controller {
+    [SharePointContextFilter]
+    public ActionResult Index() {
+      User spUser = null;
+
+      var spContext = SharePointContextProvider.Current.GetSharePointContext(HttpContext);
+
+      using (var clientContext = spContext.CreateUserClientContextForSPHost()) {
+        if (clientContext != null) {
+          spUser = clientContext.Web.CurrentUser;
+
+          clientContext.Load(spUser, user => user.Title);
+
+          clientContext.ExecuteQuery();
+
+          ViewBag.UserName = spUser.Title;
+        }
+      }
+
+      return View();
+    }
+
+    public ActionResult About() {
+      ViewBag.Message = "Your application description page.";
+
+      return View();
+    }
+
+    public ActionResult Contact() {
+      ViewBag.Message = "Your contact page.";
+
+      return View();
+    }
+  }
+}
